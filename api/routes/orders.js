@@ -8,6 +8,7 @@ const Product = require('../models/product');
 router.get('/', (req, res, next) => {
     Order.find()
         .select('product quantity _id')
+        .populate('product', 'name')
         .exec()
         .then( docs => {
             const response = {
@@ -84,6 +85,7 @@ router.post('/', (req, res, next) => {
 router.get('/:orderId', (req, res, next) => {
     Order.findById(req.params.orderId)
         .select('product quantity _id')
+        .populate('product', 'name price')
         .exec()
         .then( order => {
             console.log(order);
@@ -92,7 +94,7 @@ router.get('/:orderId', (req, res, next) => {
                     order: order,
                     request: {
                         type: 'GET',
-                        url: 'http://localhost:3000/products/' + order.product
+                        url: 'http://localhost:3000/products/' + order.product._id
                     }
                 });
             } else {
