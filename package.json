@@ -1,0 +1,27 @@
+{
+  "name": "rest-api",
+  "version": "1.0.0",
+  "description": "Node.js RESTful API - following Tutorial",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sousa99/REST-API.git"
+  },
+  "keywords": [
+    "node",
+    "restful",
+    "api"
+  ],
+  "author": "Rodrigo Sousa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sousa99/REST-API/issues"
+  },
+  "homepage": "https://github.com/Sousa99/REST-API#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
