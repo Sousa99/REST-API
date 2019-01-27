@@ -28,7 +28,6 @@ router.get('/', (req, res, next) => {
             }
             
             res.status(200).json(response);
-            console.log(docs);
         })
         .catch( err => {
             console.log(err);
@@ -55,7 +54,6 @@ router.post('/', (req, res, next) => {
             return order.save()
         })
         .then( result => {
-            console.log(result);
             res.status(201).json({
                 message: 'Created order successfully',
                 createdOrder: {
@@ -88,7 +86,6 @@ router.get('/:orderId', (req, res, next) => {
         .populate('product', 'name price')
         .exec()
         .then( order => {
-            console.log(order);
             if (order) {
                 res.status(200).json({
                     order: order,

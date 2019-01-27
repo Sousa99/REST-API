@@ -7,6 +7,7 @@ Learning about REST API's: how they work and how to build one.
 - morgan <= Middleware for dev
 - body-parser
 - mongoose <= Work with Database
+- multer <= Work with files (Parser)
 
 # Important Things to Remember
 - Ngrok <= URL instead of localhost (Not Used in Tutorial)

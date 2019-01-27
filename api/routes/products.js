@@ -1,12 +1,42 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const router = express.Router();
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/');
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + file.originalname);
+    }
+})
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
+        // ignore a file
+        cb(null, false);
+    } else {
+        // store a file
+        cb(null, true)
+    }
+
+    // != null => throws error
+}
+
+const upload = multer( {
+    storage: storage, 
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
 
 const Product = require('../models/product');
 
 router.get('/', (req, res, next) => {
     Product.find()
-        .select('name price _id')
+        .select('name price _id productImage')
         .exec()
         .then( docs => {
             const response = {
@@ -15,6 +45,7 @@ router.get('/', (req, res, next) => {
                     return {
                         name: doc.name,
                         price: doc.price,
+                        productImage: doc.productImage,
                         _id: doc._id,
                         request: {
                             type: 'GET',
@@ -25,7 +56,6 @@ router.get('/', (req, res, next) => {
             }
             
             res.status(200).json(response);
-            console.log(docs);
         })
         .catch( err => {
             console.log(err);
@@ -35,23 +65,30 @@ router.get('/', (req, res, next) => {
         });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', upload.single('productImage'), (req, res, next) => {
+    var image_path = undefined;
+    console.log("File:" + req.file);
+    if (req.file != undefined) {
+        console.log("Huray");
+        image_path = "http://localhost:3000/" + req.file.path;
+    }
 
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        productImage: image_path
     });
 
     product
         .save()
         .then( result => {
-            console.log(result);
             res.status(201).json({
                 message: 'Created product successfully',
                 createdProduct: {
                     name: result.name,
                     price: result.price,
+                    productImage: result.productImage,
                     _id: result._id,
                     request: {
                         type: 'GET',
@@ -71,10 +108,9 @@ router.post('/', (req, res, next) => {
 router.get('/:productId', (req, res, next) => {
     const id = req.params.productId;
     Product.findById(id)
-        .select('name price _id')
+        .select('name price _id productImage')
         .exec()
         .then( doc => {
-            console.log("From database", doc);
             if (doc) {
                 res.status(200).json({
                     product: doc
@@ -105,7 +141,6 @@ router.patch('/:productId', (req, res, next) => {
     Product.update( { _id: id }, { $set: updateOps } )
         .exec()
         .then( result => {
-            console.log(result);
             res.status(200).json({
                 message: 'Product updated!',
                 request: {
